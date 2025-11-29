@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import  (User,  Category, SubCategory, Course, Lesson,
                      Assignment, Question, Option, Exam, Certificate,
                      Review)
+from modeltranslation.admin import TranslationAdmin, TranslationInlineModelAdmin
+
 
 
 admin.site.register(User)
