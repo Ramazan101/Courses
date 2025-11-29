@@ -40,7 +40,7 @@ class Course(models.Model):
     )
     price = models.PositiveIntegerField(default=1)
     level = models.CharField(max_length=100, choices=LevelChoices, )
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_by_teacher')
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     course_image = models.ImageField(upload_to='course_image/', null=True, blank=True)
@@ -52,6 +52,15 @@ class Course(models.Model):
         rating = self.reviews.all()
         if rating.exists():
             return round(sum([i.rating for i in rating]) / rating.count(), 1)
+        return 0
+
+    def get_count_people(self):
+        ratings = self.reviews.all()
+        if ratings.exists():
+            if ratings.count() > 200:
+                return f'200+'
+            elif ratings.count():
+                return ratings.count()
         return 0
 
 

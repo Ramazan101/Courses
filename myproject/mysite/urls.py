@@ -5,15 +5,13 @@ from .views import (UserViewSet, CategoryListAPIView, CategoryDetailAPIView,
                     CourseListAPIView, CourseDetailAPIView, LessonViewSet, AssignmentListAPIView,
                     AssignmentDetailAPIView, QuestionListAPIView, QuestionDetailAPIView,
                     OptionListAPIView, OptionDetailAPIView, ExamListAPIVew, ExamDetailAPIView,
-                    CertificateListAPIView, CertificateDetailAPIView, ReviewViewSet,
-                    RegisterView, CustomLoginView, LogoutView)
+                    CertificateListAPIView, CertificateDetailAPIView,
+                    RegisterView, CustomLoginView, LogoutView, ReviewEditAPIView, ReviewCreateView,
+                    CourseCreateAPIView, CourseEditAPIView)
 
 router = SimpleRouter()
 router.register('users', UserViewSet)
 router.register('lesson', LessonViewSet)
-router.register('review', ReviewViewSet)
-
-
 
 
 urlpatterns = [
@@ -37,4 +35,8 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('courses/create/', CourseCreateAPIView.as_view(), name='course-create'),
+    path('courses/create/<int:pk>/', CourseEditAPIView.as_view(), name='course-detaill'),
+    path('reviews/create/', ReviewCreateView.as_view(), name='review-create'),
+    path('reviews/<int:pk>/', ReviewEditAPIView.as_view(), name='review-detail'),
 ]

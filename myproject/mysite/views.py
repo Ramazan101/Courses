@@ -1,7 +1,5 @@
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-
 from .models import (User,  Category, SubCategory, Course, Lesson,
                      Assignment, Question, Option, Exam, Certificate,
                      Review)
@@ -11,16 +9,16 @@ from .serializers import (UserSerializer, CategoryListSerializer, CategoryDetail
                           AssignmentListSerializer,AssignmentDetailSerializer, QuestionDetailSerializer,
                           QuestionListSerializer, OptionListSerializer, OptionDetailSerializer,
                           ExamListSerializer, ExamDetailSerializer, CertificateListSerializer,
-                          CertificateDetailSerializer, ReviewSerializer, UserRegisterSerializer, LoginSerializer)
+                          CertificateDetailSerializer, UserRegisterSerializer, LoginSerializer,
+                          CourseCreateSerializer, ReviewCreateSerializer)
 from rest_framework import viewsets, generics, status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.tokens import RefreshToken
-from django_filters.rest_framework import DjangoFilterBackend
 from .filter import CourseFilter
 from rest_framework.filters import SearchFilter, OrderingFilter
-from .permissions import StandardResultsSetPagination
+from .paginations import StandardResultsSetPagination
 
-from .permissions import StudentPermissions, TeacherPermission
+from .permissions import StudentPermission, TeacherPermission
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserRegisterSerializer
@@ -56,6 +54,7 @@ class LogoutView(generics.GenericAPIView):
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -78,16 +77,20 @@ class SubCategoryDetailAPIView(generics.RetrieveAPIView):
 
 class CourseCreateAPIView(generics.CreateAPIView):
     queryset = Course.objects.all()
-    serializer_class = CourseListSerializer
+    serializer_class = CourseCreateSerializer
     permission_classes = [TeacherPermission]
 
 class CourseEditAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Course.objects.all()
-    serializer_class = CourseDetailSerializer
+    serializer_class = CourseCreateSerializer
     permission_classes = [TeacherPermission]
 
     def get_queryset(self):
         return Course.objects.filter(created_by=self.request.user)
+
+class CourseDetailAPIView(generics.RetrieveAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseDetailSerializer
 
 
 class CourseListAPIView(generics.ListAPIView):
@@ -146,14 +149,14 @@ class CertificateDetailAPIView(generics.RetrieveAPIView):
 
 class ReviewCreateView(generics.CreateAPIView):
     queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    permission_classes = [StudentPermissions]
+    serializer_class = ReviewCreateSerializer
+    permission_classes = [StudentPermission]
 
 
 class ReviewEditAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewCreateSerializer
-    permission_classes = [StudentPermissions]
+    permission_classes = [StudentPermission]
 
     def get_queryset(self):
         return Review.objects.filter(user=self.request.user)

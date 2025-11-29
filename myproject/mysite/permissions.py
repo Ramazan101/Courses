@@ -1,10 +1,10 @@
 from rest_framework.permissions import BasePermission
 
-class StudentPermissions(BasePermission):
+class StudentPermission(BasePermission):
      def has_permission(self, request, view):
-        return request.user.role == 'student'
+        return request.user.role == 'клиент'
 
 
 class TeacherPermission(BasePermission):
     def has_permission(self, request, view):
-        return request.user.role == 'teacher'
+        return request.user.role == 'преподаватель'

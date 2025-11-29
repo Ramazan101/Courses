@@ -10,7 +10,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email', 'password', 'first_name', 'last_name',
-                  'phone_number')
+                  'phone_number', 'role')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -47,7 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['user_name','role', 'profile_picture', 'bio']
 
 class CategoryListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -61,16 +61,24 @@ class SubCategoryListSerializer(serializers.ModelSerializer):
         fields = ['id', 'sub_category_name']
 
 
+class CourseCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = '__all__'
+
 class CourseListSerializer(serializers.ModelSerializer):
     get_avg_rating = serializers.SerializerMethodField()
+    get_count_people = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
         fields = ['id', 'course_name', 'course_image', 'price', 'get_avg_rating',
-                  'price']
+                  'price', 'get_count_people']
 
     def get_avg_rating(self, obj):
         return obj.get_avg_rating()
+    def get_count_people(self, obj):
+        return obj.get_count_people()
 
 
 class SubCategoryDelSerializer(serializers.ModelSerializer):
@@ -83,19 +91,6 @@ class LessonSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = ['title', 'video']
 
-class CourseDetailSerializer(serializers.ModelSerializer):
-    lessons = LessonSerializer(many=True, read_only=True)
-    sub_categorys = SubCategoryListSerializer(many=True, read_only=True)
-    get_avg_rating = serializers.SerializerMethodField()
-    created_by_teacher = UserNameSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Course
-        fields = ['course_name', 'description', 'level' ,'sub_categorys', 'lessons',
-                  'get_avg_rating', 'price', 'created_by_teacher']
-
-    def get_avg_rating(self, obj):
-        return obj.get_avg_rating()
 
 
 class SubCategoryDetailSerializer(serializers.ModelSerializer):
@@ -170,6 +165,32 @@ class CertificateDetailSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format='%d-%m-%Y %H:%M')
+    user_review = UserSerializer()
+    class Meta:
+        model = Review
+        fields = ['id', 'user_review', 'comment', 'rating', 'created_at']
+
+class ReviewCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = '__all__'
+
+class CourseDetailSerializer(serializers.ModelSerializer):
+    lessons = LessonSerializer(many=True, read_only=True)
+    sub_categorys = SubCategoryListSerializer(many=True, read_only=True)
+    get_avg_rating = serializers.SerializerMethodField()
+    reviews = ReviewSerializer(many=True, read_only=True)
+    get_count_people = serializers.SerializerMethodField()
+    created_by = UserNameSerializer()
+
+    class Meta:
+        model = Course
+        fields = ['course_name', 'description', 'level' ,'sub_categorys', 'lessons',
+                  'get_avg_rating', 'price', 'reviews', 'get_count_people', 'created_by']
+
+    def get_avg_rating(self, obj):
+        return obj.get_avg_rating()
+
+    def get_count_people(self, obj):
+        return obj.get_count_people()

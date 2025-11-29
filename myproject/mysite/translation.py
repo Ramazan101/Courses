@@ -1,6 +1,5 @@
 from .models import (User, Category, SubCategory, Course, Lesson,
-                    Assignment, Option, Question, Exam)
-
+                    Assignment)
 from modeltranslation.translator import TranslationOptions, register
 
 @register(User)
@@ -33,17 +32,7 @@ class AssignmentTranslationOptions(TranslationOptions):
     fields = ('title', 'description')
 
 
-@register(Option)
-class OptionTranslationOptions(TranslationOptions):
-    fields = ('option_name',)
 
 
-@register(Question)
-class QuestionTranslationOptions(TranslationOptions):
-    fields = ('question_name',)
 
-
-@register(Exam)
-class ExamTranslationOptions(TranslationOptions):
-    fields = ('title',)
 
