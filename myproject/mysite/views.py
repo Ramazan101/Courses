@@ -13,6 +13,14 @@ from .serializers import (UserSerializer, CategoryListSerializer, CategoryDetail
                           ExamListSerializer, ExamDetailSerializer, CertificateListSerializer,
                           CertificateDetailSerializer, ReviewSerializer, UserRegisterSerializer, LoginSerializer)
 from rest_framework import viewsets, generics, status
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework_simplejwt.tokens import RefreshToken
+from django_filters.rest_framework import DjangoFilterBackend
+from .filter import CourseFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
+from .permissions import StandardResultsSetPagination
+
+from .permissions import StudentPermissions, TeacherPermission
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserRegisterSerializer
@@ -68,13 +76,29 @@ class SubCategoryDetailAPIView(generics.RetrieveAPIView):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategoryDetailSerializer
 
+class CourseCreateAPIView(generics.CreateAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseListSerializer
+    permission_classes = [TeacherPermission]
+
+class CourseEditAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseDetailSerializer
+    permission_classes = [TeacherPermission]
+
+    def get_queryset(self):
+        return Course.objects.filter(created_by=self.request.user)
+
+
 class CourseListAPIView(generics.ListAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseListSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = CourseFilter
+    search_fields = ['title']
+    ordering_fields = ['price']
+    pagination_class = StandardResultsSetPagination
 
-class CourseDetailAPIView(generics.RetrieveAPIView):
-    queryset = Course.objects.all()
-    serializer_class = CourseDetailSerializer
 
 class LessonViewSet(viewsets.ModelViewSet):
     queryset = Lesson.objects.all()
@@ -120,6 +144,16 @@ class CertificateDetailAPIView(generics.RetrieveAPIView):
     queryset = Certificate.objects.all()
     serializer_class = CertificateDetailSerializer
 
-class ReviewViewSet(viewsets.ModelViewSet):
+class ReviewCreateView(generics.CreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [StudentPermissions]
+
+
+class ReviewEditAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewCreateSerializer
+    permission_classes = [StudentPermissions]
+
+    def get_queryset(self):
+        return Review.objects.filter(user=self.request.user)
