@@ -14,7 +14,7 @@ from .serializers import (UserSerializer, CategoryListSerializer, CategoryDetail
 from rest_framework import viewsets, generics, status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.tokens import RefreshToken
-from .filter import CourseFilter
+from .filters import CourseFilter
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .paginations import StandardResultsSetPagination
 
