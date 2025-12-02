@@ -33,14 +33,14 @@ INSTALLED_APPS = [
     'mysite',
     'rest_framework',
     'phonenumber_field',
+    'django_filters',
     'rest_framework_simplejwt',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
-    'drf_yasg',
-    'django_filters',]
+    'drf_yasg',]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
